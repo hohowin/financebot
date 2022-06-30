@@ -22,13 +22,15 @@
 
     <p><%= result %></p>
 
-    <ul>
+    <table border="0">
       <% for (var name in resultMap) { %>
-        <li>
-          <strong><%= name %>: </strong><%= resultMap[name] %>
-        </li>
+      <tr>
+        <td><strong><%= name %>: </strong></td>
+        <td>&nbsp;&nbsp;&nbsp;</td>
+        <td><%= resultMap[name] %></td>
+      </tr>
       <% } %>
-    </ul>
+    </table>
   </div>
 </main>
 

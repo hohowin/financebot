@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const express = require('express')
 const quotesRouter = express.Router()
 const axios = require('axios')
@@ -36,15 +37,15 @@ quotesRouter.get('/stock', async (req, res) => {
 				}
 			});
 
-			hash['Beta (5Y Monthly)'] = getQuotes.data.quoteResponse.result[0].beta;
-			hash['EPS Current Year'] = getQuotes.data.quoteResponse.result[0].epsCurrentYear;
-			hash['EPS (TTM)'] = getQuotes.data.quoteResponse.result[0].epsTrailingTwelveMonths;
-			hash['Forward PE'] = getQuotes.data.quoteResponse.result[0].forwardPE;
-			hash['PE Ratio (TTM)'] = getQuotes.data.quoteResponse.result[0].trailingPE;
+			hash['Beta (5Y Monthly)'] = _.get(getQuotes, 'data.quoteResponse.result[0].beta', 'N/A');
+			hash['EPS Current Year'] = _.get(getQuotes, 'data.quoteResponse.result[0].epsCurrentYear', 'N/A');
+			hash['EPS (TTM)'] = _.get(getQuotes, 'data.quoteResponse.result[0].epsTrailingTwelveMonths', 'N/A');
+			hash['Forward PE'] = _.get(getQuotes, 'data.quoteResponse.result[0].forwardPE', 'N/A');
+			hash['PE Ratio (TTM)'] = _.get(getQuotes, 'data.quoteResponse.result[0].trailingPE', 'N/A');
 
-			hash['Trailing P/E'] = getStatistics.data.timeSeries.trailingPeRatio[0].reportedValue.fmt;
-			hash['Forward P/E'] = getStatistics.data.timeSeries.trailingForwardPeRatio[0].reportedValue.fmt;
-			hash['PEG Ratio (5 yr expected)'] = getStatistics.data.timeSeries.trailingPegRatio[0].reportedValue.fmt;
+			hash['Trailing P/E'] = _.get(getStatistics, 'data.timeSeries.trailingPeRatio[0].reportedValue.fmt', 'N/A');
+			hash['Forward P/E (TTM)'] = _.get(getStatistics, 'data.timeSeries.trailingForwardPeRatio[0].reportedValue.fmt', 'N/A');
+			hash['PEG Ratio (5 yr expected)'] = _.get(getStatistics, 'data.timeSeries.trailingPegRatio[0].reportedValue.fmt', 'N/A');
 		
 			console.log(JSON.stringify(hash, null, 2));
 
