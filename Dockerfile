@@ -1,6 +1,6 @@
 FROM node:18.4.0-alpine
 
-ENV TIME_ZONE="America/New_York" \
+ENV TZ="America/New_York" \
     ENV_NAME=production \
     NODE_ENV=production \
     NODE_CONFIG_ENV=production
