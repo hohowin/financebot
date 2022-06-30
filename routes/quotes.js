@@ -13,12 +13,20 @@ quotesRouter.get('/stock', async (req, res) => {
 
 	const symbol = req.query.symbol;
 	let result;
+	let name;
+	let price;
+	let currency;
 	let hash = {};
+	let date = new Date();  
+	let options = {  
+    	weekday: "long", year: "numeric", month: "short",  
+    	day: "numeric", hour: "2-digit", minute: "2-digit"  
+	};
 
 	if (!!symbol) {
 
 		symbolUpper = symbol.toUpperCase().trim();
-		result = `SYMBOL: ${symbolUpper}`;
+		result = symbolUpper;
 		console.log(`searching for ${symbolUpper}...`);
 
 		try {
@@ -29,6 +37,10 @@ quotesRouter.get('/stock', async (req, res) => {
 					'X-RapidAPI-Host': 'yh-finance.p.rapidapi.com'
 				}
 			});
+
+			name = getQuotes.data.quoteResponse.result[0].longName;
+			price = getQuotes.data.quoteResponse.result[0].regularMarketPrice;
+			currency = getQuotes.data.quoteResponse.result[0].currency;
 
 			const getStatistics = await axios.get('https://yh-finance.p.rapidapi.com/stock/v3/get-statistics?symbol=' + symbol, {
 				headers: {
@@ -46,6 +58,8 @@ quotesRouter.get('/stock', async (req, res) => {
 			hash['Trailing P/E'] = _.get(getStatistics, 'data.timeSeries.trailingPeRatio[0].reportedValue.fmt', 'N/A');
 			hash['Forward P/E (TTM)'] = _.get(getStatistics, 'data.timeSeries.trailingForwardPeRatio[0].reportedValue.fmt', 'N/A');
 			hash['PEG Ratio (5 yr expected)'] = _.get(getStatistics, 'data.timeSeries.trailingPegRatio[0].reportedValue.fmt', 'N/A');
+
+//			console.log("STAT =>\n" + JSON.stringify(getStatistics.data, null, 2) + "\n\n");
 		
 			console.log(JSON.stringify(hash, null, 2));
 
@@ -64,6 +78,10 @@ quotesRouter.get('/stock', async (req, res) => {
 
 	res.render('pages/stock', {
 		result: result,
+		name: name,
+		price: price,
+		currency: currency,
+		date: date.toLocaleTimeString("en-us", options),
 		resultMap: hash
 	});
 });

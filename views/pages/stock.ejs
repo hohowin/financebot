@@ -18,9 +18,25 @@
         <input type="submit" value="Submit"/>
     </form>
 
+    <% if (!!result) { %>
     <br/>
-
-    <p><%= result %></p>
+    <table>
+      <tr>
+        <td>SYMBOL:</td>
+        <td>&nbsp;&nbsp;&nbsp;</td>
+        <td><strong><%= result %></strong> (<%= name %>)</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>PRICE:</td>
+        <td>&nbsp;&nbsp;&nbsp;</td>
+        <td><strong><%= currency %>$ <%= price %></strong></td>
+        <td>as of <%= date %></td>
+      </tr>
+    </table>
+    <br/>
+    <br/>
+    <% } %>
 
     <table border="0">
       <% for (var name in resultMap) { %>
