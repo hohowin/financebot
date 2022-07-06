@@ -30,37 +30,42 @@ quotesRouter.get('/stock', async (req, res) => {
 		console.log(`searching for ${symbolUpper}...`);
 
 		try {
-	
-			const getQuotes = await axios.get('https://yh-finance.p.rapidapi.com/market/v2/get-quotes?region=US&symbols=' + symbol, {
-				headers: {
-					'X-RapidAPI-Key': TOKEN,
-					'X-RapidAPI-Host': 'yh-finance.p.rapidapi.com'
-				}
-			});
 
-			name = getQuotes.data.quoteResponse.result[0].longName;
-			price = getQuotes.data.quoteResponse.result[0].regularMarketPrice;
-			currency = getQuotes.data.quoteResponse.result[0].currency;
+			await Promise.all([
 
-			const getStatistics = await axios.get('https://yh-finance.p.rapidapi.com/stock/v3/get-statistics?symbol=' + symbol, {
-				headers: {
-					'X-RapidAPI-Key': TOKEN,
-					'X-RapidAPI-Host': 'yh-finance.p.rapidapi.com'
-				}
-			});
+				axios.get('https://yh-finance.p.rapidapi.com/market/v2/get-quotes?region=US&symbols=' + symbol, {
+					headers: {
+						'X-RapidAPI-Key': TOKEN,
+						'X-RapidAPI-Host': 'yh-finance.p.rapidapi.com'
+					}
+				}).then(
+					(val) => {
+						name = val.data.quoteResponse.result[0].longName;
+						price = val.data.quoteResponse.result[0].regularMarketPrice;
+						currency = val.data.quoteResponse.result[0].currency;
 
-			hash['Beta (5Y Monthly)'] = _.get(getQuotes, 'data.quoteResponse.result[0].beta', 'N/A');
-			hash['EPS Current Year'] = _.get(getQuotes, 'data.quoteResponse.result[0].epsCurrentYear', 'N/A');
-			hash['EPS (TTM)'] = _.get(getQuotes, 'data.quoteResponse.result[0].epsTrailingTwelveMonths', 'N/A');
-			hash['Forward PE'] = _.get(getQuotes, 'data.quoteResponse.result[0].forwardPE', 'N/A');
-			hash['PE Ratio (TTM)'] = _.get(getQuotes, 'data.quoteResponse.result[0].trailingPE', 'N/A');
+						hash['Beta (5Y Monthly)'] = _.get(val, 'data.quoteResponse.result[0].beta', 'N/A');
+						hash['EPS Current Year'] = _.get(val, 'data.quoteResponse.result[0].epsCurrentYear', 'N/A');
+						hash['EPS (TTM)'] = _.get(val, 'data.quoteResponse.result[0].epsTrailingTwelveMonths', 'N/A');
+						hash['Forward PE'] = _.get(val, 'data.quoteResponse.result[0].forwardPE', 'N/A');
+						hash['PE Ratio (TTM)'] = _.get(val, 'data.quoteResponse.result[0].trailingPE', 'N/A');
+					}
+				),
 
-			hash['Trailing P/E'] = _.get(getStatistics, 'data.timeSeries.trailingPeRatio[0].reportedValue.fmt', 'N/A');
-			hash['Forward P/E (TTM)'] = _.get(getStatistics, 'data.timeSeries.trailingForwardPeRatio[0].reportedValue.fmt', 'N/A');
-			hash['PEG Ratio (5 yr expected)'] = _.get(getStatistics, 'data.timeSeries.trailingPegRatio[0].reportedValue.fmt', 'N/A');
+				axios.get('https://yh-finance.p.rapidapi.com/stock/v3/get-statistics?symbol=' + symbol, {
+					headers: {
+						'X-RapidAPI-Key': TOKEN,
+						'X-RapidAPI-Host': 'yh-finance.p.rapidapi.com'
+					}
+				}).then(
+					(val) => {
+						hash['Trailing P/E'] = _.get(val, 'data.timeSeries.trailingPeRatio[0].reportedValue.fmt', 'N/A');
+						hash['Forward P/E (TTM)'] = _.get(val, 'data.timeSeries.trailingForwardPeRatio[0].reportedValue.fmt', 'N/A');
+						hash['PEG Ratio (5 yr expected)'] = _.get(val, 'data.timeSeries.trailingPegRatio[0].reportedValue.fmt', 'N/A');
+					}
+				)
+			]);
 
-//			console.log("STAT =>\n" + JSON.stringify(getStatistics.data, null, 2) + "\n\n");
-		
 			console.log(JSON.stringify(hash, null, 2));
 
 		} catch (err) {
