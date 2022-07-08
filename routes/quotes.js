@@ -60,6 +60,14 @@ quotesRouter.get('/stock', async (req, res) => {
 					hash['Trailing P/E'] = _.get(val, 'data.timeSeries.trailingPeRatio[0].reportedValue.fmt', 'N/A');
 					hash['Forward P/E (TTM)'] = _.get(val, 'data.timeSeries.trailingForwardPeRatio[0].reportedValue.fmt', 'N/A');
 					hash['PEG Ratio (5 yr expected)'] = _.get(val, 'data.timeSeries.trailingPegRatio[0].reportedValue.fmt', 'N/A');
+
+					hash['Price/Sales (ttm)'] = _.get(val, 'data.timeSeries.trailingPsRatio[0].reportedValue.fmt', 'N/A');
+					hash['Price/Book (mrq)'] = _.get(val, 'data.timeSeries.trailingPbRatio[0].reportedValue.fmt', 'N/A');
+					hash['Return on Assets (ttm)'] = _.get(val, 'data.financialData.returnOnAssets.fmt', 'N/A');
+					hash['Return on Equity (ttm)'] = _.get(val, 'data.financialData.returnOnEquity.fmt', 'N/A');
+					hash['Profit Margin'] = _.get(val, 'data.defaultKeyStatistics.profitMargins.fmt', 'N/A');
+					hash['Operating Margin (ttm)'] = _.get(val, 'data.financialData.operatingMargins.fmt', 'N/A');
+					hash['Current Ratio (mrq)'] = _.get(val, 'data.financialData.currentRatio.fmt', 'N/A');	
 				}
 			);
 
